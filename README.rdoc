@@ -1,6 +1,9 @@
 = thartm
 
-Description goes here.
+Remember the milk command line interface
+
+using rtmapi library 
+patched to work with the new version of ruby-libxml
 
 == Note on Patches/Pull Requests
  
@@ -14,4 +17,6 @@ Description goes here.
 
 == Copyright
 
-Copyright (c) 2010 tha. See LICENSE for details.
+Copyright (c) 2010 thamayor. See LICENSE for details.
+
+Mail me at: thamayor [at] gmail [dot] com

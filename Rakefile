@@ -11,6 +11,8 @@ begin
     gem.homepage = "http://github.com/ghedamat/thartm"
     gem.authors = ["tha"]
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+	gem.files =  FileList["[A-Z]*", "{bin,generators,lib,test}/**/*", ]
+	
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
   Jeweler::GemcutterTasks.new
