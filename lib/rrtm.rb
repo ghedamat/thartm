@@ -95,7 +95,7 @@ class CommandLineInterface
 		# sorting by date (inverse order) and than by task name
 		t.sort! do |a,b|
 			if (a.has_due? and b.has_due?)
-				b.due <=> a.due
+				a.due <=> b.due
 			elsif a.has_due?
 				-1
 		    elsif b.has_due? 

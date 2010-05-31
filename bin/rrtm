@@ -1,1 +1,2 @@
+#!/usr/bin/ruby
 require File.dirname(__FILE__) + '/../lib/rrtm.rb'
