@@ -33,6 +33,7 @@ require 'time'
 require 'parsedate'
 require 'rubygems'
 require 'xml/libxml'
+require 'tzinfo'
 
 
 #TODO:  allow specifying whether retval should be indexed by rtm_id or list name for lists
@@ -41,8 +42,9 @@ class ThaRememberTheMilk
   RUBY_API_VERSION = '0.6'
   # you can just put set these here so you don't have to pass them in with 
   # every constructor call
-  API_KEY = '5104c0fa64b5fa3de4e008087a429aa0'
-  API_SHARED_SECRET = '7eddbd2fe7a10e71'
+  API_KEY = ''
+  API_SHARED_SECRET = ''
+  AUTH_TOKEN= ''
   
   
   Element = 0
@@ -92,14 +94,14 @@ class ThaRememberTheMilk
   end
   
   # TODO: test efficacy of using https://www.rememberthemilk.com/services/rest/
-  def initialize( api_key = API_KEY, shared_secret = API_SHARED_SECRET, endpoint = 'http://www.rememberthemilk.com/services/rest/' )
+  def initialize( api_key = API_KEY, shared_secret = API_SHARED_SECRET,  auth_token = AUTH_TOKEN, endpoint = 'http://www.rememberthemilk.com/services/rest/')
     @max_connection_attempts = 3
     @debug = false
     @api_key = api_key
     @shared_secret = shared_secret
     @uri = URI.parse(endpoint)
     #@auth_token = nil
-    @auth_token = 'd0048af24379945a85f114e628efac36471c3f07' 
+    @auth_token = auth_token  
     @return_raw_response = false
     @use_user_tz = true
     @user_settings_cache = {}

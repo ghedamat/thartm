@@ -1,13 +1,22 @@
 #!/usr/bin/env ruby
 
 require 'rubygems'
+require 'yaml'
 require 'thartm'
 
+CONFIGFILE = File.join(File.expand_path(ENV['HOME']), '.rtm')
+begin
+	@@config = YAML.load_file(CONFIGFILE)
+rescue
+	raise "please create a .rtm file in your $HOME"
+end
 
+ENV['TZ'] = @@config['tz']
 class Rrtm 
 
 	def initialize
-		@rtm = ThaRememberTheMilk.new("5104c0fa64b5fa3de4e008087a429aa0","7eddbd2fe7a10e71")
+		@rtm = ThaRememberTheMilk.new(@@config['key'],@@config['secret'],@@config['token'])
+		@rtm.use_user_tz = true
 
 		# id of the all tasks list
 		@allTaskList = String.new 
@@ -142,7 +151,7 @@ class CommandLineInterface
 		# sorting by date (inverse order) and than by task name
 		t.sort! do |a,b|
 			if (a.has_due? and b.has_due?)
-				b.due <=> a.due
+				a.due <=> b.due
 			elsif a.has_due?
 				-1
 		    elsif b.has_due? 
@@ -182,7 +191,12 @@ end
 
 cli = CommandLineInterface.new
 if ARGV[0]
+begin
 	cli.send ARGV[0] 
+rescue
+	puts "command #{ARGV[0]} is not available"
+	cli.help
+end
 else
 	cli.tasks
 end
