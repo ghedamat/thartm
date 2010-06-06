@@ -12,8 +12,8 @@ begin
     gem.authors = ["tha"]
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
 	gem.files =  FileList["[A-Z]*", "{bin,generators,lib,test}/**/*", ]
-	gem.add_dependency 'xml'
 	gem.add_dependency 'tzinfo'
+	gem.add_dependency 'libxml-ruby'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
 
