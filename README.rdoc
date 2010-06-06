@@ -5,6 +5,28 @@ Remember the milk command line interface
 using rtmapi library 
 patched to work with the new version of ruby-libxml
 
+To make the cli work you have to obtain an api key
+and an api secret for remember the milk.
+
+Ask them at:
+http://www.rememberthemilk.com/services/api/keys.rtm
+
+puts those keys in a .rtm file in your $HOME
+the file is supposed to be in YAML format
+
+example:
+key: yourkey
+secret: yoursecret
+tz: your timezone (UTC, GMT etc..)
+
+Than you have to authorize the app and obtain the authorization token
+start thartm command line interface
+and you'll be prompted for an url
+
+The auth method could be better. I now.. give me some time :)
+
+
+
 == Note on Patches/Pull Requests
  
 * Fork the project.
@@ -19,4 +41,11 @@ patched to work with the new version of ruby-libxml
 
 Copyright (c) 2010 thamayor. See LICENSE for details.
 
+Feel free to send me suggestions :)
+
+Thanks again to the rtmapi guys, and sorry for my bad fixies :P
+
 Mail me at: thamayor [at] gmail [dot] com
+
+
+

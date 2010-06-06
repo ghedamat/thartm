@@ -5,16 +5,18 @@ begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
     gem.name = "thartm"
-    gem.summary = %Q{TODO: one-line summary of your gem}
-    gem.description = %Q{TODO: longer description of your gem}
+    gem.summary = %Q{rtmapi based remember the milk cli.}
+    gem.description = %Q{rtmapi fixed version with a simple cli added}
     gem.email = "thamayor@gmail.com"
     gem.homepage = "http://github.com/ghedamat/thartm"
     gem.authors = ["tha"]
     gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
 	gem.files =  FileList["[A-Z]*", "{bin,generators,lib,test}/**/*", ]
-	
+	gem.add_dependency 'xml'
+	gem.add_dependency 'tzinfo'
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
+
   Jeweler::GemcutterTasks.new
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"

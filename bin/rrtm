@@ -1,2 +1,40 @@
 #!/usr/bin/ruby
-require File.dirname(__FILE__) + '/../lib/rrtm.rb'
+require File.dirname(__FILE__) + '/../lib/thartm.rb'
+
+CONFIGFILE = File.join(File.expand_path(ENV['HOME']), '.rtm')
+begin
+	@@config = YAML.load_file(CONFIGFILE)
+rescue
+	raise "please create a .rtm file in your $HOME"
+end
+
+
+ENV['TZ'] = @@config['tz']
+
+# validating token
+unless @@config['token']
+		@rtm = ThaRememberTheMilk.new(@@config['key'],@@config['secret'])
+		puts "please authorize this program: open the following url and puts the frob value back here."
+		puts @rtm.auth_url
+		frob = gets
+
+		auth = @rtm.auth.getToken('frob' => frob.chomp)
+		token_file = File.open(CONFIGFILE,"+w")
+		token_file << "token: " + auth.token
+
+		puts "restart the program now"
+		exit
+end
+
+
+cli = CommandLineInterface.new(@@config['key'],@@config['secret'],@@config['token'])
+if ARGV[0]
+begin
+	cli.send ARGV[0] 
+rescue
+	puts "command #{ARGV[0]} is not available"
+	cli.help
+end
+else
+	cli.tasks
+end
