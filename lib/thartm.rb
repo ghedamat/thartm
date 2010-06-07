@@ -3,7 +3,7 @@
 require 'rubygems'
 require 'yaml'
 require 'tzinfo'
-require './lib/thartm_lib.rb'
+require File.dirname(__FILE__) + '/thartm_lib.rb'
 
 class Rrtm 
 
