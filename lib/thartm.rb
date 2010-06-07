@@ -2,7 +2,8 @@
 
 require 'rubygems'
 require 'yaml'
-require 'thartm_lib.rb'
+require 'tzinfo'
+require './lib/thartm_lib.rb'
 
 class Rrtm 
 
@@ -34,6 +35,7 @@ class Rrtm
 
 	def tasks(args = {}) 
 		tasks = @rtm.tasks.getList args 
+		
 	end
 
 	def tasksAllTaskList
@@ -149,7 +151,10 @@ class CommandLineInterface
 	def postpone
 		@rtm.postpone(ARGV[1])
 	end
-
+	
+	def tz
+		return @rtm.getTimezone
+	end
 	def first
 		t = Array.new
 		tasks = @rtm.tasksAllTaskList	

@@ -9,7 +9,7 @@ rescue
 end
 
 
-ENV['TZ'] = @@config['tz']
+#ENV['TZ'] = @@config['tz']
 
 # validating token
 unless @@config['token']
