@@ -87,6 +87,10 @@ class Rrtm
 		@rtm.tasks.setName :timeline => @timeline,:list_id =>v.list_id , :taskseries_id => v.taskseries_id, :task_id => v.task_id, :name => newname
 	end
 
+	def getTimezone
+		sets = @rtm.settings.getList
+		return sets[:timezone]
+	end
 end
 
 class CommandLineInterface
