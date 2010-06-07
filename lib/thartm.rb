@@ -11,7 +11,7 @@ class Rrtm
 		#@rtm = ThaRememberTheMilk.new(@@config['key'],@@config['secret'],@@config['token'])
 		@rtm = ThaRememberTheMilk.new(key,secret,token)
 		@rtm.use_user_tz = true
-		@rtm.debug = true
+		@rtm.debug = false
 
 		# id of the all tasks list
 		@allTaskList = String.new 

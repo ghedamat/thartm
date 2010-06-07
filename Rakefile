@@ -6,7 +6,7 @@ begin
   Jeweler::Tasks.new do |gem|
     gem.name = "thartm"
     gem.summary = %Q{rtmapi based remember the milk cli.}
-    gem.description = %Q{rtmapi fixed version with a simple cli added}
+    gem.description = %Q{rtmapi fixed version with a simple cli added, rtmapi package fixed to work with libxml2 version > 2.7}
     gem.email = "thamayor@gmail.com"
     gem.homepage = "http://github.com/ghedamat/thartm"
     gem.authors = ["tha"]

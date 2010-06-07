@@ -3,7 +3,9 @@
 Remember the milk command line interface
 
 using rtmapi library 
-patched to work with the new version of ruby-libxml
+patched to work with the new version of ruby-libxml ( libxml version > 2.7)
+if you're using an older version of libxml please refer to the old
+(and maybe better..) rtmapi gem.
 
 To make the cli work you have to obtain an api key
 and an api secret for remember the milk.
@@ -49,3 +51,252 @@ Mail me at: thamayor [at] gmail [dot] com
 
 
 
+
+=========== OLD readme from rtmapi gem ==========
+NOTICE: v0.4+ breaks the API written for v0.3.  In order to speed 
+things up (a lot), I no longer use the REXML parser, but do it with 
+libxml.  And I turn string keys into symbols, except for rtm_ids.  
+If none of this paragraph makes sense to you, just read on...
+
+This is a very bare bones API for Remember the Milk that does a minimum 
+of error checking but should be good enough.   
+
+This is also a bare bones explanation of the Ruby portion.  
+
+You need to read http://www.rememberthemilk.com/services/api/
+and familiarize yourself with the RTM API.
+
+The purpose of this code is to take care of all the grunt work in
+interacting with the API.  The rest of this document assumes you know
+how to use Ruby, have a net connection, etc.
+
+To get started, you'll need
+
+0. libxml installed.  if you are reasonably lucky, a simple
+sudo gem install libxml-ruby
+will do the trick.  If that fails, you probably need other packages
+(see http://libxml.rubyforge.org/install.html for more info)
+
+You may also want to install tzinfo (sudo gem install tzinfo)
+
+1. An RTM API KEY. See:  http://www.rememberthemilk.com/services/api/keys.rtm
+
+You'll get back an email with an API_KEY and an API_SHARED_SECRET
+
+2. Here's a program to test if your API key is any good.  I suggest
+just doing this in irb.
+
+require 'rtmapi'
+
+rtm = RememberTheMilk.new( "YOUR_API_KEY", "YOUR_API_SHARED_SECRET" )
+echo_data = rtm.test.echo( 'my_arg_1' => 'my_value_1', 'foo' => 'bar' )
+
+echo_data.my_arg_1  # should be 'my_value_1'
+echo_data.foo       # should be 'bar'
+
+method_names = rtm.reflection_getMethods()
+methods_names.size   # as of now (Jun 28, 2006), there are 47 methods...
+
+3.  Getting an authorization token.
+
+In order to do anything interesting with the API, you have to get a token
+that authorizes you to manipulate the data in an account.  The API documentation covers the different modes of authentication at
+http://www.rememberthemilk.com/services/api/authentication.rtm
+(you can skip past "signing requests" -- the API takes care of that for you)
+
+Here's a program to print out a URL that you can go to in your browser.  
+This will let you get a Token you can use for programming.
+
+require 'rtmapi'
+rtm = RememberTheMilk.new( "YOUR_API_KEY", "YOUR_API_SHARED_SECRET" )
+puts rtm.auth_url  # returns http://......
+
+
+if you visit that URL in your browser, you'll be asked to authorize.  After
+doing so, you'll either be given a frob value or, if you specified a
+callback URL, your browser will be redirected there with a frob=XXXX paramater
+appended on.
+
+you can then take that frob and get an auth token (and store it in a DB or
+whereever)
+
+require 'rtmapi'
+rtm = RememberTheMilk.new( "YOUR_API_KEY", "YOUR_API_SHARED_SECRET" )
+auth = rtm.auth.getToken( 'frob' => FROB_VALUE_YOU_WERE_GIVEN )
+
+auth.token  # the token (also, auth[:token] would work)
+auth.perms  # the perms it has (default is 'delete') 
+auth.user   # a hash of the user object (id, username, fullname)
+
+
+Return Values
+-------------
+
+The Ruby API library tends to return RememberTheMilkHash objects (except for tasks,
+see below).
+
+These are like normal hashes, except they implement convenience methods.  They also
+expect most of their keys to be symbols, except for when rtm_id's are used as keys
+E.g.,
+
+hash = RememberTheMilkHash.new
+hash[:a_key] = 6   
+hash.a_key   # returns 6
+hash.a_key = 4 
+hash.a_key   # returns 4
+
+lists = @rtm.lists.getList
+lists.keys => ['43254','23424','23424']
+lists['43254'].rtm_id => '43254'
+
+Note, you can't initially set a value using the convenience methods, and if
+you access one for which there is no key, it'll throw an exception.
+
+Also, if you want to access a parameter that is already a ruby keyword
+(e.g., 'methods'), you'll have to use the standard hash accessors:
+
+hash['methods'] will work
+hash.methods will NOT work (you'll get a list of methods that work on a RememberTheMilkHash)
+
+[for id specifically, I created a helper method, rtm_id, so
+hash.rtm_id will work and overrode 'id' so that if there is
+an rtm_id, you get that, otherwise you get the object id.  And
+'id' is deprecated, so I don't feel too guilty about that.]
+
+In general, you can look at the API to get a sense of whether the ruby
+code will return a Hash, an Array, a String, or a boolean.  Also, you
+can look at the test code.	
+
+If you want to be able to dereference non-existant keys without having
+an exception thrown (dangerous for coding!), do:
+RememberTheMilkHash::strict_keys = false
+and you're all set.
+
+For many of the write methods (e.g., rtm.contacts.add), a transaction id 
+and the newly written object are returned by the RTM API.  I used to just have the 
+Ruby wrapper just returns the transaction id info, throwing away whatever the
+particular object is.  Now, it returns the modified object with an additional
+element in the hash 'rtm_transaction' which contains a hash of info about the
+transaction (the id and if it is undoable)
+
+The test code itself is a little fragile, as it assumes it is accessing a
+particular account that your API key can't access.  To get around this,
+I created a cache of the returned data from RTM.  This means that the tests
+for you won't contact the RTM server, so you'll have to trust that the 
+net communication part works :)
+
+Tasks
+-----
+
+Tasks get put into a RememberTheMilkTask, which is just this:
+
+class RememberTheMilkTask < RememberTheMilkHash
+end
+
+But this will allow you to add special functionality to tasks
+(e.g., mixin Enumerable and define <=> based on whatever rules you'd
+like).  If there is interest, we can do the same thing for 
+groups, lists, etc etc.
+
+RememberTheMilkTask also has a number of helper methods, so you can
+do this:
+
+task = @rtm.tasks.getList.values[0].values[0]  # grabs 1st task off of first list returned by API
+modified_task = task.setTags "tag1,tag2"
+modified_task_2 = modified_task.addTags "tag3"
+modified_task.tags => ['tag1','tag2']
+modified_task_2.tags => ['tag1','tag2', 'tag3']
+
+all the methods for rtm.tasks.* have helper methods defined (except for getList)
+
+Dates
+-----
+
+For now, I convert incoming due dates in tasks to a Time object.  I don't
+bother converting all the other dates, but if someone needs those converted
+too, let me know.  To convert a Time object to a string RTM expects, do
+Time.now.iso8601  # now time in RTM-expected format (ISO-8601)
+
+To convert an ISO-8601 time to a Time object, do Time.parse(string):
+now = Time.now
+now == Time.parse( now.iso8601 )
+
+For more info, see http://www.rememberthemilk.com/services/api/dates.rtm
+
+RTM will keep track the users' local timezone.  The API can do this automatically,
+but you need to require the tzinfo lib first.  See: http://tzinfo.rubyforge.org/
+for more info.  The default is to give parsed dates in the user's local timezone
+if tzinfo has been required.  If you are writing a rails app, I recommend 
+putting the tzinfo stuff under ~/lib (along with rtm.rb), and in your environment.rb,
+add this:
+ActiveRecord::Base.default_timezone = :utc # Store all times in the db in UTC
+ENV['TZ'] = 'UTC' # This makes Time.now return time in UTC
+
+(I did my testing with tzinfo-0.3.3)
+
+Incidentally, at the moment, 
+rtm.tasks.setDueDate assumes the date is in the user's timezone when it
+is running with :parse => 1
+The RTM folks may change this behavior in the future.
+
+If you don't want dates converted to the user's local TZ, do
+@rtm.use_user_tz = false
+
+For now, we cache a user's timezone info (cache index is keyed off of auth_token)
+so it's not too painful to convert a ton of dates.  You can call @rtm.logout(auth_token)
+to erase the cache for that user.   I need to make that a cleaner interface.
+
+Exceptions
+----------
+
+If the RTM API returns an error, the Ruby API throws a RememberTheMilkError.
+There are getters for the raw XML response, the parsed error code
+and the parsed message:
+
+error.response   # returns a REXML element
+error.error_code # returns a FixNum
+error.message    # returns a string
+
+
+
+Debugging
+---------
+To see copious debugging output, 
+rtm.debug = true
+
+This will show you the method calls being made, how they are being packaged,
+and what the raw (XML) response from the server is.
+
+
+Other stuff
+-----------
+
+1.  I made heavy use of method_missing so you could write nice looking method
+calls.  E.g.,
+rtm.reflection.getMethods()
+
+instead of
+
+rtm.call_api_method( 'reflection.getMethods' )
+
+As long as the RTM API doesn't conflict with Ruby keywords, we should be all
+set.  You can always directly invoke call_api_method() if you need/want to.
+
+2.  You can use symbols or strings in a RTM method call, and if you
+use a Fixnum, it gets converted to a string.
+so, these are all equivalent:
+rtm.test.echo( 'arg1' => 'value1', 'arg2' => '666', 'arg3' => 'foobar' )
+rtm.test.echo( :arg1 => 'value1', :arg2 => 666, :arg3 => :foobar )
+rtm.test.echo( :arg1 => 'value1', 'arg2' => 666, 'arg3' => :foobar )
+
+(We just blindly call to to_s() on every argument to package it up for a 
+method call to the RTM API)
+
+Other questions/comments/complaints?
+------------------------------------
+
+Email me at yanowitz+rtmapi AT gmail
+
+PS:  Many thanks to the good folks at RTM for a very useful product!
+If you come up with interesting uses for this API, please drop me a
+line.  Thanks.
