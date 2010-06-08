@@ -31,8 +31,8 @@ cli = CommandLineInterface.new(@@config['key'],@@config['secret'],@@config['toke
 if ARGV[0]
 begin
 	cli.send ARGV[0] 
-rescue
-	puts "command #{ARGV[0]} is not available"
+rescue Exception => e
+	puts e, "command #{ARGV[0]} is not available"
 	cli.help
 end
 else

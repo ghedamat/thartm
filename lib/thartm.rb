@@ -29,7 +29,17 @@ class Rrtm
 		end
 		return allTaskList
 	end
-
+	
+	def findList(name)
+		flist = ''
+		name.chomp!
+		@lists.each do |k,v|
+			if v[:name] == name
+				flist = v[:id]
+			end
+		end
+		return flist
+	end
 	def lists
 		lists = @rtm.lists.getList
 	end
@@ -44,12 +54,12 @@ class Rrtm
 	end
 
 	
-	def addTask(text, * args ) 
-		if args.length == 1
-			listname = args[0]
+	def addTask(name) 
+		if name =~ /^(@(\w|\s)+@)/
+			listname = name.match(/^(@(\w|\s)+@)/)[0][1..-2]
+			name.sub!(/^(@(\w|\s)+@)/,'')
 		end
-	
-		listid = 0
+		listid = allTaskList
 		if listname
 		@lists.each do |k,v|
 			if v[:name].match(listname)
@@ -58,11 +68,7 @@ class Rrtm
 		end
 		end
 
-		if listid != 0
-			@rtm.tasks.add :timeline => @timeline, :name =>  text, :parse => '1', :list_id => listid
-		else
-			@rtm.tasks.add :timeline => @timeline, :name =>  text, :parse => '1'
-		end
+		@rtm.tasks.add :timeline => @timeline, :name =>  name, :parse => '1', :list_id => listid
 	end
 
 	def findTask(id)
@@ -104,11 +110,26 @@ class CommandLineInterface
 
 	def tasks
 		t = Array.new
-		tasks = @rtm.tasksAllTaskList	
+		if ARGV[1]
+			l = @rtm.findList(ARGV[1..-1].join(" "))
+			begin
+				tasks = @rtm.tasks :list_id => l
+			rescue Exception => e	
+				puts e,"list not found"
+				return ''
+			end
+		else
 
+			tasks = @rtm.tasksAllTaskList	
+
+		end
 		tasks.each do |key,val|
-			val.each do |k,v|
-				t.push(v) unless v.complete? # do not add c ompleted tasks
+			if val.class == RememberTheMilkHash
+				val.each do |k,v|
+					t.push(v) unless v.complete? # do not add c ompleted tasks
+				end
+			elsif val.class == RememberTheMilkTask
+					t.push(val) unless val.complete? # do not add c ompleted tasks
 			end
 		end
 
@@ -134,7 +155,7 @@ class CommandLineInterface
 	end
 
 	def add 
-		@rtm.addTask(ARGV[1], ARGV[2] )
+		@rtm.addTask(ARGV[1..-1].join(" "))
 	end
 
 	def lists
@@ -146,11 +167,19 @@ class CommandLineInterface
 	end
 	
 	def complete
+		begin 
 		@rtm.completeTask(ARGV[1])
+		rescue 
+			p "invalid task id"
+		end
 	end
 
 	def postpone
+		begin 
 		@rtm.postpone(ARGV[1])
+		rescue 
+			p "invalid task id"
+		end
 	end
 	
 	def tz
@@ -193,10 +222,10 @@ usage rrtm <command> <params>
 
 help: print this help and exits
 lists: show available tasks lists
-tasks: show not completed tasks
-add name [lists name]: adds a task to the lists
-complete id: mark task with id "id" as completed
-postpone id: postpone task by one day
+tasks [list name]: show not completed tasks
+add <name>: name can be a task or in the form @list name@ task
+complete <id>: mark task with id "id" as completed
+postpone <id>: postpone task by one day
 first: show first uncompleted task
 '
 	puts s
