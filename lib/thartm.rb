@@ -234,6 +234,7 @@ help: print this help and exits
 lists: show available tasks lists
 tasks [list name]: show not completed tasks
 add <name>: name can be a task or in the form @list name@ task
+add "<name>" : input is better parsed within quotes: task #Listname !priority_value(1..3) 
 complete <id>: mark task with id "id" as completed
 postpone <id>: postpone task by one day
 first: show first uncompleted task
