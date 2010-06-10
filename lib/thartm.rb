@@ -147,12 +147,22 @@ class CommandLineInterface
 		end
 
 		# compose string result
-		s = ''
 		t.each do |tt|
-			s += tt[:id] + ":  "  +   tt[:name].to_s + " -- " + tt.due.to_s + "\n"
+			s = tt[:id] + ":  "  +   tt[:name].to_s + " -- " + tt.due.to_s + "\n"
+            color(s,tt)
 		end
-		puts s 
 	end
+
+    def color(s,t)
+        p = case t[:task][0][:priority] 
+            when 'N' then printf("\e[0m%s \e[0m",s)
+            when '1' then printf("\e[31;40m%s \e[0m",s)
+            when '2' then printf("\e[32;40m%s \e[0m",s)
+            when '3' then printf("\e[32;40m%s \e[0m",s)
+            else puts "err"
+        end
+        
+    end
 
 	def add 
 		@rtm.addTask(ARGV[1..-1].join(" "))
