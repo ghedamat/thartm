@@ -155,10 +155,10 @@ class CommandLineInterface
 
     def color(s,t)
         p = case t[:task][0][:priority] 
-            when 'N' then printf("\e[0m%s \e[0m",s)
-            when '1' then printf("\e[31;40m%s \e[0m",s)
-            when '2' then printf("\e[32;40m%s \e[0m",s)
-            when '3' then printf("\e[32;40m%s \e[0m",s)
+            when 'N' then printf("\e[0m%s\e[0m",s)
+            when '1' then printf("\e[31;40m%s\e[0m",s)
+            when '2' then printf("\e[32;40m%s\e[0m",s)
+            when '3' then printf("\e[32;40m%s\e[0m",s)
             else puts "err"
         end
         
