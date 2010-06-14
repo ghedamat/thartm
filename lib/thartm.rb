@@ -157,7 +157,7 @@ class CommandLineInterface
         p = case t[:task][0][:priority] 
             when 'N' then printf("\e[0m%s\e[0m",s)
             when '1' then printf("\e[31;40m%s\e[0m",s)
-            when '2' then printf("\e[32;40m%s\e[0m",s)
+            when '2' then printf("\e[33;40m%s\e[0m",s)
             when '3' then printf("\e[32;40m%s\e[0m",s)
             else puts "err"
         end
@@ -186,9 +186,9 @@ class CommandLineInterface
 
 	def postpone
 		begin 
-		@rtm.postpone(ARGV[1])
-		rescue 
-			p "invalid task id"
+		@rtm.postponeTask(ARGV[1].chomp)
+		rescue Exception => e
+			p "invalid task id",e
 		end
 	end
 	
