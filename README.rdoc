@@ -17,12 +17,12 @@ puts those keys in a .rtm file in your $HOME
 the file is supposed to be in YAML format
 
 example:
-key: yourkey
-secret: yoursecret
-tz: your timezone (UTC, GMT etc..)
+* key: yourkey
+* secret: yoursecret
+* tz: your timezone (UTC, GMT etc..)
 
 Than you have to authorize the app and obtain the authorization token
-start thartm command line interface
+start thartm command line interface (executable is named rrtm for brevity)
 and you'll be prompted for an url
 
 The auth method could be better. I now.. give me some time :)

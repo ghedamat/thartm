@@ -10,7 +10,7 @@ begin
     gem.email = "thamayor@gmail.com"
     gem.homepage = "http://github.com/ghedamat/thartm"
     gem.authors = ["tha"]
-    gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
+    #gem.add_development_dependency "thoughtbot-shoulda", ">= 0"
 	gem.files =  FileList["[A-Z]*", "{bin,generators,lib,test}/**/*", ]
 	gem.add_dependency 'tzinfo'
 	gem.add_dependency 'libxml-ruby'
