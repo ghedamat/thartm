@@ -25,12 +25,16 @@
 #TODO add yaml api check?
 
 require 'uri'
-require 'md5'
+if /^1\.9/ === RUBY_VERSION then
+    require 'digest/md5'
+else
+    require 'md5'
+    require 'parsedate'
+end
 require 'cgi'
 require 'net/http'
 require 'date'
 require 'time'
-require 'parsedate'
 require 'rubygems'
 require 'xml/libxml'
 require 'tzinfo'
@@ -405,7 +409,11 @@ class ThaRememberTheMilk
   end
   
   def sign_request( args )
-    return MD5.md5(@shared_secret + args.sort.flatten.join).to_s
+    if /^1\.9/ === RUBY_VERSION then
+        return (Digest::MD5.new << @shared_secret + args.sort.flatten.join).to_s
+    else
+        return MD5.md5(@shared_secret + args.sort.flatten.join).to_s
+    end
   end
 end
 
